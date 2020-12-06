@@ -1,95 +1,191 @@
-//The things that will never change
+window.addEventListener('DOMContentLoaded', (event) => {
+
+	//Variables
+	const startTimer = 60;
+	let time = 60;
+	let score = 0;
+	let questionCounter = 0;
+let timeset;
+let answers = document.querySelectorAll('#quizContainer button');
 
 
-const startButton = document.getElementById('start-btn')
-const nextButton = document.getElementById('next-btn')
-const questionContainerElement = document.getElementById('question-container')
-
-const questionElement = document.getElementById('question')
-const answerButtonsElement = document.getElementById('answer-buttons')
+let highscoreArray = [];
 
 
-let currentQuestionIndex = 0; 
-const questions = [
-    {
-        question: "What does CSS stands for?",
-        answers: [
-            { text: " Creative Style Sheets", correct: false },
-            { text: "Cascading Style Sheets", correct: true },
-            { text: " Computer Style Sheets", correct: false },
-            { text: " Colorful Style Sheets", correct: false },
-        ]
+(localStorage.getItem('highscoreArray')) ? highscoreArray = JSON.parse(localStorage.getItem('highscoreArray')): highscoreArray = [];
+	
 
-    }
-    
+// Declarations 
+let queryElement = (element) => {
+return document.querySelector(element);
+}
+	
+//Function if the game has started
+let onlyDisplaySection = (element) => {
+let sections = document.querySelectorAll("section");
+Array.from(sections).forEach((userItem) => {
+	userItem.classList.add('hide');
+});
+queryElement(element).classList.remove('hide');
+}
+	
 
-
-]
-
-//Event attached to the Start button to start the game
-startButton.addEventListener('click', function startGame() {
-    startButton.classList.add('hide')
-    questionContainerElement.classList.remove('hide')
-    showQuestion(questions[currentQuestionIndex])
-})
-
-
-//For the next button
-// function setNextQuestion() {
-//     resetState()
-//     showQuestion(questions[currentQuestionIndex])
-
-// }
-
-function showQuestion(question){
-    questionElement.innerText = question.question;
-    for (var i = 0; i < question.answers.length; i ++){
-        var item = question.answers[i];
-        const button = document.createElement('button')
-        button.innerText = item.text
-        button.classList.add('btn')
-        if (item.correct) {
-            button.dataset.correct = item.correct  //ONLY SETTING IF THE ANSWER IS CORRECT SO THERE WOULD BE NO CONFUSION IF IT IS FALSE 
-        }
-        button.addEventListener('click', selectAnswer)
-        answerButtonsElement.appendChild(button)
-    }
-     question.answers.forEach(answer => {
-         const button = document.createElement('button')
-         button.innerText = answers.text
-         button.classList.add('btn')
-         if (answer.correct) {
-             button.dataset.correct = answer.correct  //ONLY SETTING IF THE ANSWER IS CORRECT SO THERE WOULD BE NO CONFUSION IF IT IS FALSE 
-         }
-         button.addEventListener('click', selectAnswer)
-         answerButtonsElement.appendChild(button)
-
-      
-     })
-
+let highscoreHtmlReset = () => {
+queryElement('#highScores div').innerHTML = "";
+var i = 1;
+highscoreArray.sort((a, b) => b.score - a.score);
+Array.from(highscoreArray).forEach(check =>
+{
+	var scores = document.createElement("div");
+	scores.innerHTML = i + ". " + check.initialRecord + " - " + check.score;
+	queryElement('#highScores div').appendChild(scores);
+	i = i + 1
+});
+i = 0;
+Array.from(answers).forEach(answer => {
+	answer.classList.remove('disable');
+});
 }
 
-function resetState(){
-    nextButton.classList.add('hide')
-   
+//Questions
+let setQuestionData = () => {
+	queryElement('#quizContainer p').innerHTML = questions[questionCounter].title;
+	queryElement('#quizContainer button:nth-of-type(1)').innerHTML = `1. ${questions[questionCounter].choices[0]}`;
+	queryElement('#quizContainer button:nth-of-type(2)').innerHTML = `2. ${questions[questionCounter].choices[1]}`;
+	queryElement('#quizContainer button:nth-of-type(3)').innerHTML = `3. ${questions[questionCounter].choices[2]}`;
+	queryElement('#quizContainer button:nth-of-type(4)').innerHTML = `4. ${questions[questionCounter].choices[3]}`;
 }
 
-//For the selected answer
-function selectAnswer(e) {
-    console.log("button-click")
-    // const selectedButton = e.target
-    // const correct = selectedButton.dataset.correct
-    // setStatusClass(document.body, correct)
-    // Array.from(answerButtonsEl.children).forEach(button => {
-    //     setStatusClass(button, button.dataset.correct)
-    // })
+//Function of the question (correct or incorrect)
+let quizUpdate = (answerCopy) => {
+	queryElement('#scoreIndicator p').innerHTML = answerCopy;
+	queryElement('#scoreIndicator').classList.remove('invisible', scoreIndicator());
+	Array.from(answers).forEach(answer =>
+	{
+		answer.classList.add('disable');
+	});
+
+// If all the questions are answered 
+setTimeout(() => {
+	if (questionCounter === questions.length) {
+		onlyDisplaySection("#finish");
+		time = 0;
+			queryElement('#time').innerHTML = time;
+	} else {
+
+setQuestionData();
+	
+		Array.from(answers).forEach(answer => {
+		answer.classList.remove('disable');
+			});
+		}
+	}, 1000);
 }
 
 
-function setStatusClass(element, correct) {
-    clearStatusclass(element)
-    if (correct) {
-       element.classList.add('correct') 
-    }
+let myTimer = () => {
+	if (time > 0) {
+		time = time - 1;
+		queryElement('#time').innerHTML = time;
+	} else {
+		clearInterval(clock);
+		queryElement('#score').innerHTML = score;
+		onlyDisplaySection("#finish");
+	}
 }
-//Question list
+
+// Function for timer//
+let clock;
+queryElement("#intro button").addEventListener("click", (event) => {
+	
+	setQuestionData();
+	onlyDisplaySection("#quizContainer");
+	clock = setInterval(myTimer, 1000);
+});
+
+
+
+let scoreIndicator = () => {
+	clearTimeout(timeset);
+	timeset = setTimeout(() => {
+	    queryElement('#scoreIndicator').classList.add('invisible');
+	}, 1000);
+}
+
+
+Array.from(answers).forEach(check => {
+	check.addEventListener('click', function (event) {
+		
+		if (this.innerHTML.substring(3, this.length) === questions[questionCounter].answer) {
+			score = score + 1;
+			questionCounter = questionCounter + 1;
+			quizUpdate("Your answer is correct");
+		}else{
+			
+			time = time - 10;
+			questionCounter = questionCounter + 1;
+			quizUpdate("Your answer is incorrect");
+		}
+	});
+});
+
+
+queryElement("#reset").addEventListener("click", () => {
+	time = startTimer;
+	score = 0;
+	questionCounter = 0;
+	onlyDisplaySection("#intro");
+});
+	//High scores
+queryElement("#scores").addEventListener("click", (event) => {
+	event.preventDefault();
+	clearInterval(clock);
+	queryElement('#time').innerHTML = 0;
+	time = startTimer;
+	score = 0;
+	questionCounter = 0;
+	onlyDisplaySection("#highScores");
+	highscoreHtmlReset();
+});
+
+//Submitting score
+let errorIndicator = () => {
+	clearTimeout(timeset);
+	timeset = setTimeout(() => {
+		queryElement('#errorIndicator').classList.add('invisible');
+	}, 3000);
+}
+//Debugging
+queryElement("#records button").addEventListener("click", () => {
+	let initialsRecord = queryElement('#initials').value;
+	if (initialsRecord === ''){
+		queryElement('#errorIndicator p').innerHTML = "Please enter at least 1 character";
+		queryElement('#errorIndicator').classList.remove('invisible', errorIndicator());
+	} else if (initialsRecord.length > 5) {
+		queryElement('#errorIndicator p').innerHTML = "not more than 5 characters allowed";
+	} else if (initialsRecord.match(/[[A-Za-z]/) === null) {
+		queryElement('#errorIndicator p').innerHTML = "Please only use letters.";
+		queryElement('#errorIndicator').classList.remove('invisible', errorIndicator());
+		queryElement('#errorIndicator').classList.remove('invisible', errorIndicator());
+	} else {
+		
+		highscoreArray.push({
+			"initialRecord": initialsRecord,
+			"score": score
+		});
+		
+		localStorage.setItem('highscoreArray', JSON.stringify(highscoreArray));
+		queryElement('#highScores div').innerHTML = '';
+		onlyDisplaySection("#highScores");
+		highscoreHtmlReset();
+		queryElement("#initials").value = '';
+	}
+});
+
+queryElement("#clearScores").addEventListener("click", () => {
+	highscoreArray = [];
+	queryElement('#highScores div').innerHTML = "";
+	localStorage.removeItem('highscoreArray');
+});
+
+});

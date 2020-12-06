@@ -1,58 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="Assets/style.css" rel="stylesheet">
-    <script defer src="Assets/script.js"></script>
-    <title>Coding Quiz</title>
-    
-    
+    <title>Code Quiz</title>
+    <link rel="stylesheet" href="Assets/style.css">
+
 </head>
 
-
 <body>
-
-  
-
- 
-
-
- <div class="container">
-
- 
-
-
-
-
-   <div id="question-container" class="hide">
-
-   <!--QUESTIONS-->
-
-
-   <div id="question">Question</div>
-   <div id="answer-buttons" class="btn-grid"></div>
-   </div> 
+  <!--Nav bar-->
+    <div id="controls">
+        <div id="info">
+            <button id="scores">View High Scores</button>
+            <div id="timer">
+                <p>Time left: <span id="time">0</span></p>
+            </div>
+        </div>
+    </div>
    
-   <!-- control buttons-->
 
-
-   <div class="controls">
-     <button id="start-btn" class="start-btn btn">Start</button>
-     <button id="next-btn" class="next-btn btn hide">Next</button>
-
-
-     
-
-   </div>
- </div>
-</div>
-
-  
-  
+    <div id="positionWrapper">
+        <section id="intro">
+            <h1>Avatar: The Last Air Bender Quiz with a twist!</h3>
+            <h3>Answer as much questions as you can.</br>
+              But for ever incorrect answer, 10 seconds will be deducted from your time.
+                
+            </p>
+            <button>Start Quiz</button>
+          </section>
+       
+        <section id="quizContainer" class="hide">
+            <p id="title"></p>
+         <!--Buttons-->
+            <button></button>
+            <button></button>
+            <button></button>
+            <button></button>
+            <div id="scoreIndicator" class="invisible">
+              <p>&nbsp;</p>
+            </div>
+        </section>
 
         
+        <section id="finish" class="hide">
+            <h1>Finish</h1>
+            <p>Your final score is&nbsp;<span id="score"></span></p>
+            <div id="records">
+                <p>Enter initials: </p><input id="initials" type="text"> <button>Submit</button>
+            </div>
+            <div id="errorIndicator" class="invisible">
+                <p>&nbsp;</p>
+            </div>
+        </section>
+        
 
-    
+        <section id="highScores" class="hide">
+            <h1>High Scores</h1>
+            <div>
+
+            </div>
+            <button id="reset">Go Back</button> <button id="clearScores">Clear Highscores</button>
+        </section>
+       
+
+    </div>
+
+    <script src="Assets/questions.js"></script>
+    <script src="Assets/script.js"></script>
+
 </body>
 </html>
